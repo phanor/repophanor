@@ -1,0 +1,57 @@
+<?php $__env->startSection('head'); ?>
+<title>Página de inicio</title>
+<meta name='description' content='Página de inicio'>
+<meta name='keywords' content='palabras, clave'>
+<meta name='robots' content='All'>
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Tangerine">
+        <link rel="stylesheet" href="css/bootstrap.css">
+        <link rel="stylesheet" href="css/main.css">
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+
+<h1>Página de inicio</h1>
+
+<hr>
+<?php echo Form::open(array
+            (
+            'action' => 'HomeController@index', 
+            'method' => 'GET',
+            'role' => 'form',
+            'class' => 'form-inline'
+            )); ?>
+
+<?php echo Form::input('text', 'buscar', Input::get('buscar'), array('class' => 'form-control') ); ?>
+
+<?php echo Form::input('submit', null, 'Buscar', array('class' => 'btn btn-primary')); ?>
+
+<?php echo Form::close(); ?>
+
+<hr>
+<label class="label label-info">Página <?php echo $paginacion->getCurrentPage(); ?>. <?php echo $paginacion->getTotal(); ?> resultados</label>
+<hr>
+<?php foreach($paginacion as $fila): ?>
+<hr>
+<div class="row">
+        <div class='col-md-3'>
+            <img src="<?php echo URL::to('/').'/'.$fila->src; ?>" title="<?php echo $fila->titulo; ?>" width="150" height="150">
+        </div>
+        <div class='col-md-9'>
+            <h3><a href="<?php echo URL::route('articulo', array('id' => $fila->id)); ?>"><?php echo $fila->titulo; ?></a></h3>
+            URL:<a href="<?php echo $fila->href; ?>" target="_blank"><?php echo $fila->href; ?></a>
+            <hr>
+            <?php echo $fila->descripcion; ?>
+
+        </div>
+</div>
+<hr>
+<?php endforeach; ?>
+
+<div class="container">
+    <?php echo $paginacion->appends(array("buscar" => Input::get("buscar")))->links(); ?>
+
+</div>
+
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.bootstrap', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
