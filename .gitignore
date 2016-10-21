@@ -6,3 +6,8 @@ composer.lock
 .env.php
 .DS_Store
 Thumbs.db
+target
+.settings/*
+!.settings/.jsdtscope
+.project
+.classpath
