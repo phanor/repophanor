@@ -43,6 +43,7 @@ return array(
 
 	'port' => 587,
 
+
 	/*
 	|--------------------------------------------------------------------------
 	| Global "From" Address
@@ -54,7 +55,7 @@ return array(
 	|
 	*/
 
-	'from' => array('address' => 'phanorcito@gmail.com', 'name' => 'Administrador'),
+	'from' => array('address' => 'phanorprueba@gmail.com', 'name' => 'Administrador'),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -66,6 +67,7 @@ return array(
 	| transport layer security protocol should provide great security.
 	|
 	*/
+
 
 	'encryption' => 'tls',
 
@@ -80,7 +82,7 @@ return array(
 	|
 	*/
 
-	'username' => 'phanorcito@gmail.com',
+	'username' => 'phanorprueba@gmail.com',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -93,7 +95,7 @@ return array(
 	|
 	*/
 
-	'password' => 'monopolio',
+	'password' => 'prueba22',
 
 	/*
 	|--------------------------------------------------------------------------
