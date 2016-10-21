@@ -13,20 +13,50 @@ Route::get('/salir', 'HomeController@salir', function(){});
 
 Route::get('/register', 'HomeController@register', function(){});
 
-Route::get('/confirmregister/{email}/{key}', function($email, $key){
+Route::get('/confirmregister/{email}/{codigo_confirmacion}', function($email, $codigo_confirmacion){
+
+     $Usuarios =user::where('email',$email)->get();
+        // $Estado="Activo";   
+
+    foreach ($Usuarios as $value) {
+
+        $confirmation_code=$value->codigo_confirmacion;
+
+    }   
+    if($confirmation_code==$codigo_confirmacion){
+
+       $confirmation_code = str_random(30);    
+
+       $conn = DB::connection("mysql");
+       $sql = "UPDATE users SET active=1, codigo_confirmacion='$confirmation_code' WHERE email=?";
+       $conn->update($sql, array($email));
+
+       $message = "<hr><label class='label label-success'><strong> <font size =4', face='Lucida Sans'>Error!!!...Enhorabuena tu registro se ha llevado a cabo con éxito.</font></strong></label><hr>";
+
+       return Redirect::route("login")->with("message", $message);
+   }  else  {
+
+     $message = "<hr><label class='label label-danger'><strong> <font size =4', face='Lucida Sans'>Error!!!...La cuenta ya habia sido verificada.</font></strong></label><hr>";
+
+     return Redirect::route("login")->with("message", $message);
+ }
+
+
+
+    //--------------------------------------------------------
  
-    if (urldecode($email) == Cookie::get("email") && urldecode($key) == Cookie::get("key"))
-    {
-        $conn = DB::connection("mysql");
-        $sql = "UPDATE users SET active=1 WHERE email=?";
-        $conn->update($sql, array($email));
-        $message = "<hr><label class='label label-success'>Enhorabuena tu registro se ha llevado a cabo con éxito.</label><hr>";
-        return Redirect::route("login")->with("message", $message);
-    }
-    else
-    {
-        return Redirect::route("register");
-    }
+    // if (urldecode($email) == Cookie::get("email") && urldecode($key) == Cookie::get("key"))
+    // {
+    //     $conn = DB::connection("mysql");
+    //     $sql = "UPDATE users SET active=1 WHERE email=?";
+    //     $conn->update($sql, array($email));
+    //     $message = "<hr><label class='label label-success'>Enhorabuena tu registro se ha llevado a cabo con éxito.</label><hr>";
+    //     return Redirect::route("login")->with("message", $message);
+    // }
+    // else
+    // {
+    //     return Redirect::route("register");
+    // }
 });
 
 Route::get('/recoverpassword', 'HomeController@recoverpassword', function(){});
@@ -117,13 +147,13 @@ Route::post('/register', array('before' => 'csrf', function(){
         
         // Crear cookies para luego verificar el link de registro
         // String alfanumérico de 32 caracteres de longitud
-        $key = Str::random(32);
-        Cookie::queue('key', $key, 60*24);
+        $codigo_confirmacion = Str::random(32);
+      //  Cookie::queue('key', $key, 60*24);
         // Almacenar el email
         Cookie::queue('email', $email, 60*24);
         
         // Crear la url de confirmación para el mensaje del email
-        $msg = "<a href='".URL::to("/confirmregister/$email/$key")."'>Confirmar cuenta</a>";
+        $msg = "<a href='".URL::to("/confirmregister/$email/$codigo_confirmacion")."'>Confirmar cuenta</a>";
         
         
         //Enviar email para confirmar el registro
