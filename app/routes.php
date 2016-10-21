@@ -102,7 +102,7 @@ else
 }));
 
 Route::post('/register', array('before' => 'csrf', function(){
-    
+
     $rules = array
     (
         'user' => 'required|regex:/^[a-záéóóúàèìòùäëïöüñ\s]+$/i|min:3|max:50',
@@ -135,7 +135,7 @@ Route::post('/register', array('before' => 'csrf', function(){
     
     if ($validator->passes())
     {
-        
+
         //Guardar los datos en la tabla users 
         $user = input::get('user');
         $email = input::get('email');
@@ -167,10 +167,10 @@ Route::post('/register', array('before' => 'csrf', function(){
 
         Mail::send('emails.register', $data, function($message) use ($fromName, $fromEmail, $user, $email)
         {
-         $message->to($email, $user);
-         $message->from($fromEmail, $fromName);
-         $message->subject('Confirmar registro en Laravel');
-     });
+           $message->to($email, $user);
+           $message->from($fromEmail, $fromName);
+           $message->subject('Confirmar registro en Laravel');
+       });
         
         $message = '<hr><label class="label label-info">'.$user.' le hemos enviado un email a su cuenta de correo electrónico para que confirme su registro</label><hr>';
         
@@ -178,9 +178,9 @@ Route::post('/register', array('before' => 'csrf', function(){
     }
     else
     {
-       return Redirect::back()->withInput()->withErrors($validator);  
-   }
-   
+     return Redirect::back()->withInput()->withErrors($validator);  
+ }
+
 }));
 
 Route::post('/recoverpassword', array('before' => 'csrf', function(){
