@@ -140,7 +140,9 @@ Route::post('/register', array('before' => 'csrf', function(){
         $user = input::get('user');
         $email = input::get('email');
         $password = Hash::make(input::get('password'));
-        $codigo_confirmacion = Str::random(32);
+        $codigo_confirmacion = Str::random(30);
+
+
         
         $conn = DB::connection('mysql');
         $sql = "INSERT INTO users(user, email, password,codigo_confirmacion) VALUES (?, ?, ?,?)";
