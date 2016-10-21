@@ -140,13 +140,13 @@ Route::post('/register', array('before' => 'csrf', function(){
         $user = input::get('user');
         $email = input::get('email');
         $password = Hash::make(input::get('password'));
-        $codigo_confirmacion = Str::random(30);
+        $code = Str::random(30);
 
 
         
         $conn = DB::connection('mysql');
         $sql = "INSERT INTO users(user, email, password,codigo_confirmacion) VALUES (?, ?, ?,?)";
-        $conn->insert($sql, array($user, $email, $password,$codigo_confirmacion));
+        $conn->insert($sql, array($user, $email, $password,$code));
         
         // Crear cookies para luego verificar el link de registro
         // String alfanumérico de 32 caracteres de longitud
