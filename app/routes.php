@@ -144,9 +144,9 @@ Route::post('/register', array('before' => 'csrf', function(){
 
 
         
-        $conn = DB::connection('mysql');
-        $sql = "INSERT INTO users(user, email, password,codigo_confirmacion) VALUES (?, ?, ?,?)";
-        $conn->insert($sql, array($user, $email, $password,$code));
+        // $conn = DB::connection('mysql');
+        // $sql = "INSERT INTO users(user, email, password,codigo_confirmacion) VALUES (?, ?, ?,?)";
+        // $conn->insert($sql, array($user, $email, $password,$code));
         
         // Crear cookies para luego verificar el link de registro
         // String alfanumérico de 32 caracteres de longitud
