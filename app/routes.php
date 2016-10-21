@@ -15,36 +15,36 @@ Route::get('/register', 'HomeController@register', function(){});
 
 Route::get('/confirmregister/{email}/{codigo_confirmacion}', function($email, $codigo_confirmacion){
 
-     $Usuarios =user::where('email',$email)->get();
+ $Usuarios =user::where('email',$email)->get();
         // $Estado="Activo";   
 
-    foreach ($Usuarios as $value) {
+ foreach ($Usuarios as $value) {
 
-        $confirmation_code=$value->codigo_confirmacion;
+    $confirmation_code=$value->codigo_confirmacion;
 
-    }   
-    if($confirmation_code==$codigo_confirmacion){
+}   
+if($confirmation_code==$codigo_confirmacion){
 
-       $confirmation_code = str_random(30);    
+   $confirmation_code = str_random(30);    
 
-       $conn = DB::connection("mysql");
-       $sql = "UPDATE users SET active=1, codigo_confirmacion='$confirmation_code' WHERE email=?";
-       $conn->update($sql, array($email));
+   $conn = DB::connection("mysql");
+   $sql = "UPDATE users SET active=1, codigo_confirmacion='$confirmation_code' WHERE email=?";
+   $conn->update($sql, array($email));
 
-       $message = "<hr><label class='label label-success'><strong> <font size =4', face='Lucida Sans'>Error!!!...Enhorabuena tu registro se ha llevado a cabo con éxito.</font></strong></label><hr>";
+   $message = "<hr><label class='label label-success'><strong> <font size =4', face='Lucida Sans'>Error!!!...Enhorabuena tu registro se ha llevado a cabo con éxito.</font></strong></label><hr>";
 
-       return Redirect::route("login")->with("message", $message);
-   }  else  {
+   return Redirect::route("login")->with("message", $message);
+}  else  {
 
-     $message = "<hr><label class='label label-danger'><strong> <font size =4', face='Lucida Sans'>Error!!!...La cuenta ya habia sido verificada.</font></strong></label><hr>";
+ $message = "<hr><label class='label label-danger'><strong> <font size =4', face='Lucida Sans'>Error!!!...La cuenta ya habia sido verificada.</font></strong></label><hr>";
 
-     return Redirect::route("login")->with("message", $message);
- }
+ return Redirect::route("login")->with("message", $message);
+}
 
 
 
     //--------------------------------------------------------
- 
+
     // if (urldecode($email) == Cookie::get("email") && urldecode($key) == Cookie::get("key"))
     // {
     //     $conn = DB::connection("mysql");
@@ -82,35 +82,35 @@ Route::any('/articulo/{id}', array('as' => 'articulo', 'uses' => 'HomeController
 
 Route::post('/login', array('before' => 'csrf', function(){
     
-               $user = array(
-                    'email' => Input::get('email'),
-                    'password' => Input::get('password'),
-                    'active' => 1,
-                );
-                
-                $remember = Input::get("remember");
-                $remember == 'On' ? $remember = true : $remember = false;
-                
-                if (Auth::user()->attempt($user, $remember))
-                {
-                    return Redirect::route("privado");
-                }
-                else
-                {
-                    return Redirect::route("login");
-                }
+   $user = array(
+    'email' => Input::get('email'),
+    'password' => Input::get('password'),
+    'active' => 1,
+    );
+   
+   $remember = Input::get("remember");
+   $remember == 'On' ? $remember = true : $remember = false;
+   
+   if (Auth::user()->attempt($user, $remember))
+   {
+    return Redirect::route("privado");
+}
+else
+{
+    return Redirect::route("login");
+}
 }));
 
 Route::post('/register', array('before' => 'csrf', function(){
     
     $rules = array
     (
-    'user' => 'required|regex:/^[a-záéóóúàèìòùäëïöüñ\s]+$/i|min:3|max:50',
-    'email' => 'required|email|unique:users|between:3,80',
-    'password' => 'required|regex:/^[a-z0-9]+$/i|min:8|max:16',
-    'repetir_password' => 'required|same:password',
-    'terminos' => 'required',
-    );
+        'user' => 'required|regex:/^[a-záéóóúàèìòùäëïöüñ\s]+$/i|min:3|max:50',
+        'email' => 'required|email|unique:users|between:3,80',
+        'password' => 'required|regex:/^[a-z0-9]+$/i|min:8|max:16',
+        'repetir_password' => 'required|same:password',
+        'terminos' => 'required',
+        );
     
     $messages = array
     (
@@ -129,7 +129,7 @@ Route::post('/register', array('before' => 'csrf', function(){
         'repetir_password.required' => 'El campo repetir password es requerido',
         'repetir_password.same' => 'Los passwords no coinciden',
         'terminos.required' => 'Tienes que aceptar los términos',
-    );
+        );
     
     $validator = Validator::make(Input::All(), $rules, $messages);
     
@@ -140,17 +140,17 @@ Route::post('/register', array('before' => 'csrf', function(){
         $user = input::get('user');
         $email = input::get('email');
         $password = Hash::make(input::get('password'));
+        $codigo_confirmacion = Str::random(32);
         
         $conn = DB::connection('mysql');
-        $sql = "INSERT INTO users(user, email, password) VALUES (?, ?, ?)";
-        $conn->insert($sql, array($user, $email, $password));
+        $sql = "INSERT INTO users(user, email, password,codigo_confirmacion) VALUES (?, ?, ?,?)";
+        $conn->insert($sql, array($user, $email, $password,$codigo_confirmacion));
         
         // Crear cookies para luego verificar el link de registro
         // String alfanumérico de 32 caracteres de longitud
-        $codigo_confirmacion = Str::random(32);
-      //  Cookie::queue('key', $key, 60*24);
-        // Almacenar el email
-        Cookie::queue('email', $email, 60*24);
+
+
+        
         
         // Crear la url de confirmación para el mensaje del email
         $msg = "<a href='".URL::to("/confirmregister/$email/$codigo_confirmacion")."'>Confirmar cuenta</a>";
@@ -160,47 +160,47 @@ Route::post('/register', array('before' => 'csrf', function(){
         $data = array(
             'user' => $user,
             'msg' => $msg,
-          );
+            );
         
-         $fromEmail = 'mdgproduccionesweb@gmail.com';
-         $fromName = 'Administrador';
+        $fromEmail = 'mdgproduccionesweb@gmail.com';
+        $fromName = 'Administrador';
 
-          Mail::send('emails.register', $data, function($message) use ($fromName, $fromEmail, $user, $email)
-          {
-             $message->to($email, $user);
-             $message->from($fromEmail, $fromName);
-             $message->subject('Confirmar registro en Laravel');
-          });
-         
-          $message = '<hr><label class="label label-info">'.$user.' le hemos enviado un email a su cuenta de correo electrónico para que confirme su registro</label><hr>';
-    
-          return Redirect::route('register')->with("message", $message);
+        Mail::send('emails.register', $data, function($message) use ($fromName, $fromEmail, $user, $email)
+        {
+         $message->to($email, $user);
+         $message->from($fromEmail, $fromName);
+         $message->subject('Confirmar registro en Laravel');
+     });
+        
+        $message = '<hr><label class="label label-info">'.$user.' le hemos enviado un email a su cuenta de correo electrónico para que confirme su registro</label><hr>';
+        
+        return Redirect::route('register')->with("message", $message);
     }
     else
     {
        return Redirect::back()->withInput()->withErrors($validator);  
-    }
-    
+   }
+   
 }));
 
 Route::post('/recoverpassword', array('before' => 'csrf', function(){
     
     $rules = array(
         "email" => "required|email|exists:users",
-    );
+        );
     
     $messages = array(
         "email.required" => "El campo email es requerido",
         "email.email" => "El formato de email es incorrecto",
         "email.exists" => "El email seleccionado no se encuentra registrado",
-    );
+        );
     
     $validator = Validator::make(Input::All(), $rules, $messages);
     
     if ($validator->passes())
     {
         Password::user()->remind(Input::only("email"), function($message) {
-        $message->subject('Recuperar password en Laravel');
+            $message->subject('Recuperar password en Laravel');
         });
         
         $message = '<hr><label class="label label-info">Le hemos enviado un email a su cuenta de correo electrónico para que pueda recuperar su password</label><hr>';
@@ -215,20 +215,20 @@ Route::post('/recoverpassword', array('before' => 'csrf', function(){
 
 Route::post('/updatepassword', array('before' => 'csrf', function(){
     
-            $credentials = array(
-            'email' => Input::get('email'),
-            'password' => Input::get('password'),
-            'password_confirmation' => Input::get('repetir_password'),
-            'token' => Input::get('token'),
-                );
+    $credentials = array(
+        'email' => Input::get('email'),
+        'password' => Input::get('password'),
+        'password_confirmation' => Input::get('repetir_password'),
+        'token' => Input::get('token'),
+        );
 
-            Password::user()->reset($credentials, function($user, $password) {
-            $user->password = Hash::make($password);
-            $user->save();
-            });
-            
-            $message = '<hr><label class="label label-info">Password cambiado con éxito, ya puedes iniciar sesión</label><hr>';
-            return Redirect::to('login')->with('message', $message);
+    Password::user()->reset($credentials, function($user, $password) {
+        $user->password = Hash::make($password);
+        $user->save();
+    });
+    
+    $message = '<hr><label class="label label-info">Password cambiado con éxito, ya puedes iniciar sesión</label><hr>';
+    return Redirect::to('login')->with('message', $message);
     
 }));
 
@@ -245,7 +245,7 @@ Route::post('/creararticulo', array('before' => 'csrf', function(){
         "descripcion" => "required|min:10|max:1000",
         "src" => "required|max:10000|mimes:jpg,jpeg,png,gif", //10000 kb
         "href" => "required|min:5|max:250|url",
-    );
+        );
     
     $messages = array(
         "titulo.required" => "El campo Título es requerido",
@@ -262,7 +262,7 @@ Route::post('/creararticulo', array('before' => 'csrf', function(){
         "href.min" => "El mínimo permitido son 5 caracteres",
         "href.max" => "El máximo permitido son 250 caracteres",
         "href.url" => "Introduce una url correcta",
-    );
+        );
     
     $validator = Validator::make(Input::All(), $rules, $messages);
 
@@ -312,7 +312,7 @@ Route::post('/editararticulo/{id}', array('before' => 'csrf', function(){
         "descripcion" => "required|min:10|max:1000",
         "src" => "max:10000|mimes:jpg,jpeg,png,gif", //10000 kb
         "href" => "required|min:5|max:250|url",
-    );
+        );
     
     $messages = array(
         "titulo.required" => "El campo Título es requerido",
@@ -328,7 +328,7 @@ Route::post('/editararticulo/{id}', array('before' => 'csrf', function(){
         "href.min" => "El mínimo permitido son 5 caracteres",
         "href.max" => "El máximo permitido son 250 caracteres",
         "href.url" => "Introduce una url correcta",
-    );
+        );
     
     $validator = Validator::make(Input::All(), $rules, $messages);
 
@@ -351,36 +351,36 @@ Route::post('/editararticulo/{id}', array('before' => 'csrf', function(){
             $conn = DB::connection("mysql");
             
             /** Si se ha seleccionado una nueva imagen guardamos la nueva imagen 
-               y eliminamos la anterior **/
+            y eliminamos la anterior **/
             if ($src["size"] > 0)
             {
-            $ruta_imagen = "directorio/images/";
-            $imagen = rand(1000, 9999)."-".$src["name"];
-            move_uploaded_file($src["tmp_name"], $ruta_imagen.$imagen);
-            
-            /* Hacemos la consulta para obtener el src de la imagen anterior */
-            $sql = "SELECT src FROM directorio WHERE id=? AND id_user=?";
-            $anterior_imagen = $conn->select($sql, array($id, $id_user));
-            $anterior_imagen = $anterior_imagen[0]->src;
-            /* Eliminamos la imagen si existe */
+                $ruta_imagen = "directorio/images/";
+                $imagen = rand(1000, 9999)."-".$src["name"];
+                move_uploaded_file($src["tmp_name"], $ruta_imagen.$imagen);
+                
+                /* Hacemos la consulta para obtener el src de la imagen anterior */
+                $sql = "SELECT src FROM directorio WHERE id=? AND id_user=?";
+                $anterior_imagen = $conn->select($sql, array($id, $id_user));
+                $anterior_imagen = $anterior_imagen[0]->src;
+                /* Eliminamos la imagen si existe */
                 if (is_file($anterior_imagen))
                 {
                     unlink($anterior_imagen);
                 }
             }
- 
+            
             /* Si se ha seleccionado una nueva imagen, amoldamos la consulta para 
              * guardar también el src de la nueva imagen
              */
             if ($src["size"] > 0)
             {
-            $sql = "UPDATE directorio SET titulo='$titulo', descripcion='$descripcion', src='".$ruta_imagen.$imagen."', href='$href' WHERE id=? AND id_user=?";
-            $conn->update($sql, array($id, $id_user));
+                $sql = "UPDATE directorio SET titulo='$titulo', descripcion='$descripcion', src='".$ruta_imagen.$imagen."', href='$href' WHERE id=? AND id_user=?";
+                $conn->update($sql, array($id, $id_user));
             }
             else /* De lo contrario sólo actualizamos titulo, descripcion y href */
             {
-            $sql = "UPDATE directorio SET titulo='$titulo', descripcion='$descripcion', href='$href' WHERE id=? AND id_user=?";
-            $conn->update($sql, array($id, $id_user));   
+                $sql = "UPDATE directorio SET titulo='$titulo', descripcion='$descripcion', href='$href' WHERE id=? AND id_user=?";
+                $conn->update($sql, array($id, $id_user));   
             }
             
             $message = "<hr><label class='label label-info'>Enhorabuena artículo editado con éxito</label><hr>";
